@@ -1,46 +1,38 @@
 from random import sample
+import os, sys
 
-#soojendus = 
-def treeningplaan(*lihasgrupid):
-    jalad = ["Squats","Lunges","Step-ups","Bulgarian split squats","Leg press","Romanian deadlift","Jalad surumine eest",
-        "Jalad surumine tagant","Calf raise"]
-    biits = ["DB curls","Two-step spider curls","BB curls","Alternating DB hammer curls","Zottman curls",
-        "BB bent over row","Chin ups","BB reverse curls"]
-    triits = ["Rope tricep pushdown","Skullcrushers","DB overhead extensions","DB close grip bench press","One arm lat pulldowns",
-        "Kickbacks","Machine triceps extensions","Rope cable overhead extension"]
-    core = ["Ab Wheel Rollout","Three-Point Plank","Single Leg Romanian Deadlift","Weighted windshield wipers",
-        "Reverse Crunches","Hanging Leg Raise","Dipi jaamas jalgade L-tõste","Superman Hold","Flutter Kick",
-        "Russian twists","Cable wood choppers","Plank","Lamav jalgratas", "Lying leg raise"]
-    selg = ["Lat pulldown","Seated cable row","DB single arm row","BB bent over row","T bar row","Chest supported DB row",
-        "Bent over DB row (alternating)","Kettlebell swings","Deadlift", "Pull ups"]
-    õlad = ["Arnold press","BB Overhead Shoulder Press","Seated DB Shoulder Press","Front Raise",
-        "Bent-Over DB Lateral Raise","DB Lateral Raise","DB shoulder press","Reverse Pec Deck Fly",
-        "Reverse Cable Crossover","One-Arm Cable Lateral Raise","Standing BB Shrugs"]
-    rind = ["Diamond pushups","Incline DB Bench Press","Rinnaltsurumine, poolistudes","Rinnaltsurumine kitsalt",
-        "Dipid","Rinnaltsurumine","Plate Press-Out","Seated Pec Deck Machine","Cable Crossover"]
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
 
-    #see dict on pärast koodi lihtsustamiseks
-    harjutused = {'jalad':jalad, 'biits':biits, 'triits':triits, 'core':core, 'selg':selg, 'õlad':õlad, 'rind':rind}
+    return os.path.join(base_path, relative_path)
 
-    fail = open("treening.txt","w+")
+def treeningplaan(*muscleGroups):
 
-    harjutusi_kokku = len(lihasgrupid)
-    subharjutusi = 3
-    #arenda seda siis, kui lihasgruppide arvu valida saab
-    #if harjutusi_kokku == 1: #aka kui ainult jalapäev siis 8 harjutust jalgadele
-    #    subharjutusi = 8
-    #elif harjutusi_kokku == 2:
-    #    subharjutusi = 4
-    #else:
-    #    subharjutusi = 3
+    #Dict for mapping indexes of x group's excercises in 2d array of excercises to muscle groups
+    excercises = {'Legs':0, 'Biceps':0, 'Triceps':0, 'Core':0, 'Back':0, 'Shoulders':0, 'Chest':0}
 
-    for elem in lihasgrupid: #elem = valitud lihasgrupp
-        fail.write(elem + ":-------\n")
-        print(elem + ":--------")
-        for element in sample(harjutused.get(elem,""),subharjutusi): 
-            #,harjutused,get... = elemendi harjutuste massiiv; subharjutusi = mitu samplet võtab
-            fail.write(element+"\n")
-            print(element)
+    #Might add more muscle groups at one point, this lists them all
+    files = os.listdir("resources/excercises/")
+
+    ex = ["a"]*len(files)
+    #For every file: open file, split the lines & save them to the 2d array 'ex'
+    for index, file in enumerate(files):
+        with open("resources/excercises/"+file, 'r') as f:
+            ex[index] = f.read().splitlines()
+            excercises[file.replace(".txt","")] = index
     
-    
-    fail.close()    
+    #For every muscle group: pick a random sample of n to use in the workout plan
+    workoutPlan = ""
+    for group in muscleGroups:
+        workoutPlan += group + ":-------\n"
+
+        #3 random excercises, modify 2nd parameter to change the amount
+        for excercise in sample(ex[excercises.get(group)],3):
+            workoutPlan += excercise + "\n" 
+                
+    return workoutPlan

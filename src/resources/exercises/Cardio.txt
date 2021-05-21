@@ -1,6 +1,0 @@
-Running 5km
-Running 10km
-Swimming 3km
-Swimming 5km
-Biking 10km
-Biking 20km

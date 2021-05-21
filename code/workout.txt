@@ -1,0 +1,6 @@
+Cardio------------
+Swimming 3km
+Running 5km
+Biking 10km
+Swimming 5km
+Running 10km
